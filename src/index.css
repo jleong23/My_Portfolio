@@ -1,15 +1,23 @@
 @import "tailwindcss";
 
-@theme {
+@theme { /*!Custom theme variables*/
+  /*
+  -It pulls values from other var defined in(:root),
+  -Wraps them with hsl() so they become actual color values.
+  */
   --color-border: hsl(var(--border));
   --color-background: hsl(var(--background));
-  --color-foreground: hsl(val(--foreground));
+  --color-foreground: hsl(var(--foreground));
 
-  --color-primary: hsl(val(--primary));
-  --color-primary-foreground: hsl(val(--primary-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
 
-  --color-card: hsl(val(--card));
+  --color-card: hsl(var(--card));
 
+  /*! Animation variables (animations to easily apply later).
+  -Pre-defined animation values so I can apply animations consistently in HTML later.
+  -Example: animation: var(--animate-float);
+  */
   --animate-float: float 6s ease-in-out infinite;
   --animate-pulse-subtle: pulse-subtle 4s ease-in-out infinite; /*make the star slightly pulsing*/
   --animate-fade-in: fade-in 0.7s ease-out forwards;
@@ -19,8 +27,9 @@
   --animate-fade-in-delay-4: fade-in 0.7s ease-out 0.8s forwards;
   --animate-metor: meteor 5s linear infinite;
 
-  /* Keyframes: Telling how the animations should act */
+  /*! Keyframes: Defining how animations behave.*/
   @keyframes float { 
+    /*Makes element gently float up & down, like a subtle hover effect.*/
     0%, 
     100% {
       transform: translateY(0);
@@ -30,6 +39,7 @@
     } 
   }
   @keyframes pulse-subtle { 
+    /*Makes element slightly fade in & out, giving a breathing effect.*/
     0%, 
     100% {
       opacity: 1; /*every 1sec, the opacity of the start will go from 0.8 -- 1 (visible to slightly invisible)*/
@@ -38,7 +48,8 @@
       opacity: 0.8;
     } 
   }
-  @keyframes fade-in { /*Getting from completely invisible, to visible + fade in from the left*/
+  @keyframes fade-in { 
+    /*Useful for entrances. Getting from completely invisible, to visible + fade in from the left.*/
     from {
       opacity: 0;
       transform: translate(20px);
@@ -49,7 +60,11 @@
     }
   }
   @keyframes meteor { 
-    /*"rotate" is to make the meteor fly across the screen*/
+    /*Simulates a meteor flying across the screen:
+    -Follows a rotated path(215 degree angle)
+    -Moves horizontally by -500px
+    -Fades out near the end
+    */
     0%{
       transform: rotate(215deg) translateX(0);
       opacity: 1;
@@ -63,3 +78,126 @@
     }
   }
 }
+
+@layer base { /*!Defining Light & Dark theme colours.*/
+  /*
+  -Defines your HSL color values for both light & dark themes.
+  :root :Applies to the default (light theme).
+  .dark :Applies when you add the "dark class" to <html> or <body>
+
+  Each values: 210(hue) 40%(saturation) 98%(lightness)very light background.
+  */
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+
+    --primary: 250 47% 60%;
+    --primary-foreground: 210 40% 95%;
+
+    --border: 214 32% 91%;
+  }
+
+  .dark {
+    --background: 222 47% 4%;
+    --foreground: 213 31% 91%;
+
+    --card: 222 47% 8%;
+
+    --primary: 250 65% 65%;
+    --primary-foreground: 213 31% 91%;
+
+    --border: 217 33% 20%;
+  }
+
+  * {
+    @apply border-border;
+
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/*!Utility Classes*/
+@utility container { 
+  /*Creates a responsive container that: */
+  margin-inline: auto; /*Center itself horizontally */
+  padding-inline: 2rem; /*Has 2rem padding on left & right */
+
+  @media (width >= 640px) { /*Max width changes at breakpoints for responsiveness */
+    max-width: 640px
+  }
+  @media (width >= 768px) {
+    max-width: 768px
+  }
+  @media (width >= 1024px) {
+    max-width: 1024px
+  }
+  @media (width >= 1280px) {
+    max-width: 1280px
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px
+  }
+}
+
+@utility text-glow {
+  /*Adds a glowing text effect using text-shadow.*/
+  /*text-shadow:0(no shift left/right) 0(no shift up/down) 10px(shadow's blurred by 10px-softGlow effect) rgba(167(red), 139(green), 250(blue), 0.5(50% opacity) */
+  @apply relative;
+  text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+}
+
+@utility card-hover {
+  /*Adds a smooth hover effect to cards
+  -On hover:
+      -Scales up slightly(scale(1.02).
+      -Adds a large shadow.
+  */
+  @apply transition-transform duration-300 hover:scale-[1.02] hover:shadow-lg;
+}
+
+@utility gradient-border {
+  /* Creates a subtle gradient border.
+  -relative positioning: element position can be adjusted slightly using "top","left","right","bottom".
+  -rounded-md: rounded corneres
+  -background-clip: padding-box ensures the gradient doesn't bleed outside the border.
+  -border: 1px solid transparent works with background clipping to give the illusion of a gradient border.
+  */
+  @apply relative rounded-md;
+  background: linear-gradient(to right, hsl(var(--card)),hsl(var(--card)) );
+  background-clip: padding-box;
+  border: 1px solid transparent;
+}
+
+@utility cosmic-button {
+  @apply px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium 
+         transition-all duration-300 hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]
+         hover: scale-105 active:scale-95;
+}
+
+@utility star {
+  @apply absolute rounded-full bg-white;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.4);
+}
+
+@utility meteor {
+  @apply absolute bg-linear-to-r from-white via-white to-transparent rounded-full;
+  box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.3);
+}
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align:center;
+}
+
