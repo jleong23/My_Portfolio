@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { cn } from "../lib/utils"
+import { Key } from "lucide-react";
 
 const navItems = [
   {name: "Home", href: "#hero"},
@@ -36,10 +37,30 @@ export const Navbar = () => {
               <span className="text-glow text-foreground">Jason Leong</span> Portfolio
             </span>
           </a>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex space-x-8">
+            {navItems.map((item,key) => (
+              <a href={item.href} key={key} className="text-foreground/80 hover:text-primary transition-colors duration-300">
+                {item.name}
+              </a>
+
+            ))}
+          </div>
+
+          {/* Mobile nav */}
+          <div className={cn("fixed inset-0")}>
+            <div className="hidden md:flex space-x-8">
+              {navItems.map((item,key) => (
+                <a href={item.href} key={key} className="text-foreground/80 hover:text-primary transition-colors duration-300">
+                  {item.name}
+                </a>
+
+              ))}
+            </div>
+          </div>
+          
         </div>
-
-
-
       </nav>
   )
 
